@@ -2,10 +2,11 @@
   "name": "refrigerator_alarm_bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index"
   },
   "keywords": [],
   "author": "andy",
@@ -15,6 +16,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.2",
     "node-schedule": "^2.1.0",
-    "node-telegram-bot-api": "^0.56.0"
+    "node-telegram-bot-api": "^0.56.0",
+    "nodemon": "^2.0.15"
   }
 }
