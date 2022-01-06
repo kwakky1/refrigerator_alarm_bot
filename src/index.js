@@ -1,4 +1,5 @@
 require("dotenv").config();
 
 const bot = require('./bot');
-require('./web')(bot);
+const notion = require('./notion');
+require('./web')(bot, notion);
