@@ -30,8 +30,7 @@ let chatList = []
 chatList.push(process.env.DEFAULT_CHAT_ID, process.env.VIVI_CHAT_ID)
 
 
-const job = schedule.scheduleJob('21 * * *', async function(){
-    console.log('*********** 21:00 start scheduleJob ***********');
+const job = schedule.scheduleJob('0 18 * * *', async function(){
     await notion.then((result)=>{
         if(result.length > 0) {
             chatList.map((chatId)=>{
