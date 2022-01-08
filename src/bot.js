@@ -30,7 +30,7 @@ let chatList = []
 chatList.push(process.env.DEFAULT_CHAT_ID, process.env.VIVI_CHAT_ID)
 
 
-const job = schedule.scheduleJob('11 * * *', async function(){
+const job = schedule.scheduleJob('15 * * * *', async function(){
     console.log('The answer to life, the universe, and everything!');
     await notion.then((result)=>{
         if(result.length > 0) {
