@@ -2,13 +2,17 @@ const token = process.env.TOKEN;
 
 const Bot = require('node-telegram-bot-api');
 const schedule = require('node-schedule');
-const notion = require('./notion')
+const {typeFilter, getTypeList, leftDateFive, allThings} = require('./notion')
 
 let bot;
 
 if(process.env.NODE_ENV === 'production') {
     bot = new Bot(token);
-    bot.setWebHook(process.env.HEROKU_URL + bot.token);
+    bot.setWebHook(process.env.HEROKU_URL + bot.token).then(()=>{
+        console.log('bot start production mode in Heroku url')
+    }).catch((err)=>{
+        console.log('webHook',err)
+    });
 }
 else {
     bot = new Bot(token, { polling: true });
@@ -16,12 +20,51 @@ else {
 
 console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
 
-bot.on('message', (msg) => {
+bot.on("polling_error", console.log);
+
+
+bot.on('message', async (msg) => {
+    if (msg.text.toString().indexOf('전체보기') === 0) {
+        let message = ''
+        await allThings().then((value)=>{
+            message = value
+        })
+        bot.sendMessage(msg.chat.id, message).then();
+    }
+
+    let typeList = []
+
+    await getTypeList().then((name)=>{
+        typeList.push(...name)
+    })
+
+    typeList.map(async (name)=>{
+        if (msg.text.toString().indexOf(name) === 0) {
+            let message = ''
+            await typeFilter(name).then((value)=>{
+                message = value
+            })
+            bot.sendMessage(msg.chat.id, message).then();
+        }
+    })
+});
+
+bot.onText(/\/start/, (msg) => {
     const name = msg.from.first_name;
-    console.log(msg.chat.id);
-    bot.sendMessage(msg.chat.id, 'Hello, ' + name + '!').then(() => {
-        // reply sent!
-    });
+    bot.sendMessage(msg.chat.id, `🚀 안녕하세요! ${name} 저는 냉장고 챗봇입니다.\n/help 라고 입력해보세요. 제가 어떤일을 하는지 알려드릴게요!`).then();
+});
+
+bot.onText(/\/help/, async (msg) => {
+    const keyboard = [['전체보기']]
+    await getTypeList().then((value)=>{
+        keyboard.push(...value.map((value)=> [value]))
+    })
+    console.log(keyboard)
+    bot.sendMessage(msg.chat.id, "👇냉장고에서 찾고 싶은 물품을 눌러주세요👇", {
+        "reply_markup": {
+            "keyboard": keyboard
+        }
+    }).then();
 });
 
 let rule = new schedule.RecurrenceRule();
@@ -30,8 +73,8 @@ let chatList = []
 chatList.push(process.env.DEFAULT_CHAT_ID, process.env.VIVI_CHAT_ID)
 
 
-const job = schedule.scheduleJob('0 18 * * *', async function(){
-    await notion.then((result)=>{
+schedule.scheduleJob('0 18 * * *', async function(){
+    await leftDateFive.then((result)=>{
         if(result.length > 0) {
             chatList.map((chatId)=>{
                 let state = ''
