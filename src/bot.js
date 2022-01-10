@@ -74,7 +74,7 @@ chatList.push(process.env.DEFAULT_CHAT_ID, process.env.VIVI_CHAT_ID)
 
 
 schedule.scheduleJob('0 18 * * *', async function(){
-    await leftDateFive.then((result)=>{
+    await leftDateFive().then((result)=>{
         if(result.length > 0) {
             chatList.map((chatId)=>{
                 let state = ''
