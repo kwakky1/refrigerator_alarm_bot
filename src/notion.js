@@ -40,7 +40,7 @@ const leftDateFive = async () => {
             }
         })
     } catch (error) {
-        console.log('leftDateFive',error)
+        console.log(error)
     }
 }
 
@@ -55,7 +55,7 @@ const getTypeList = async () => {
         })
         return Array.from(new Set(result));
     } catch (e) {
-        console.log('getTypeList', e)
+        console.log(e)
     }
 }
 

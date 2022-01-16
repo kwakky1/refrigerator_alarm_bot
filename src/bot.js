@@ -51,10 +51,14 @@ bot.on('message', async (msg) => {
 
 bot.onText(/\/start/, (msg) => {
     const name = msg.from.first_name;
-    bot.sendMessage(msg.chat.id, `🚀 안녕하세요! ${name} 저는 냉장고 챗봇입니다.\n/help 라고 입력해보세요. 제가 어떤일을 하는지 알려드릴게요!`).then();
+    bot.sendMessage(msg.chat.id, `🚀 안녕하세요! ${name} 저는 냉장고 챗봇입니다.\n/help 라고 입력해보세요.\n 제가 어떤일을 하는지 알려드릴게요!`).then();
 });
 
 bot.onText(/\/help/, async (msg) => {
+    bot.sendMessage(msg.chat.id, `🚀🚀🚀🚀🚀🚀🚀\n 냉장고 물건보기 👉 /list 라고 입력해보세요.\n 유통기한 체크 👉 /expire 라고 입력해보세요.`).then();
+});
+
+bot.onText(/\/list/, async (msg) => {
     const keyboard = [['전체보기']]
     await getTypeList().then((value)=>{
         keyboard.push(...value.map((value)=> [value]))
@@ -65,6 +69,26 @@ bot.onText(/\/help/, async (msg) => {
             "keyboard": keyboard
         }
     }).then();
+});
+
+bot.onText(/\/expire/, async (msg) => {
+    await leftDateFive().then((result)=>{
+        if(result.length > 0) {
+            chatList.map((chatId)=>{
+                let state = ''
+                result.map((item)=>{
+                    if(item.left === 0){
+                        state += `${item.name} 오늘까지입니다.\n`
+                    } else if(item.left > 0){
+                        state += `${item.name} ${item.left}일 남았습니다.\n`
+                    } else {
+                        state += `${item.name} ${Math.abs(item.left)}일 지났습니다.\n`
+                    }
+                })
+                bot.sendMessage(chatId, state)
+            })
+        }
+    })
 });
 
 let rule = new schedule.RecurrenceRule();
