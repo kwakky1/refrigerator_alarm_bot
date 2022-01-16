@@ -74,7 +74,6 @@ bot.onText(/\/list/, async (msg) => {
 bot.onText(/\/expire/, async (msg) => {
     await leftDateFive().then((result)=>{
         if(result.length > 0) {
-            chatList.map((chatId)=>{
                 let state = ''
                 result.map((item)=>{
                     if(item.left === 0){
@@ -85,8 +84,8 @@ bot.onText(/\/expire/, async (msg) => {
                         state += `${item.name} ${Math.abs(item.left)}일 지났습니다.\n`
                     }
                 })
-                bot.sendMessage(chatId, state)
-            })
+                bot.sendMessage(msg.chat.id, state)
+
         }
     })
 });
